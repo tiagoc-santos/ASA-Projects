@@ -1,8 +1,6 @@
 #include <iostream>
 #include <vector>
 
-
-
 int maximizeValue(std::vector<int> areas,
                   std::vector<int> values, int plateArea, int numTypes){
     
