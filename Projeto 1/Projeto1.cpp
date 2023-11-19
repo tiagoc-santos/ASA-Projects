@@ -8,7 +8,6 @@ int maximizeValue(std::vector<int> areas,
     std::vector<int> calculatedValues = std::vector<int>(plateArea + 1, 0);
 
     for(i = 1; i <= plateArea; i++){
-        calculatedValues[i] = calculatedValues[i - 1];
         for(int j = 0; j < numTypes; j++){
             if(areas[j] <= i){
                 calculatedValues[i] = std::max(calculatedValues[i], 
