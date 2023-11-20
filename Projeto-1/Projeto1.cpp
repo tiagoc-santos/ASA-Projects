@@ -40,6 +40,6 @@ int main(){
     }
     
     maxValue = maximizeValue(areas, values, plateArea, numTypes);
-    std::cout << maxValue;
+    std::cout << maxValue << std::endl;
     return 0;
 }
