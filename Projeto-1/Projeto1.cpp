@@ -19,14 +19,14 @@ int maximizeValue(std::vector<int> areas,
 }
 
 int main(){
-    int column = 0, line = 0, plateArea = 0, numTypes = 0,
-    value = 0, maxValue = 0;
+    int plateColumn = 0, plateLine = 0, plateArea = 0, numTypes = 0,
+    value = 0, maxValue = 0, line = 0, column = 0;
     
-    std::cin >> column;
-    std::cin >> line;
+    std::cin >> plateColumn;
+    std::cin >> plateLine;
     std::cin >> numTypes;
     
-    plateArea = column * line;
+    plateArea = plateColumn * plateLine;
 
     std::vector<int> areas = std::vector<int>(numTypes, 0);
     std::vector<int> values = std::vector<int>(numTypes, 0);
@@ -35,10 +35,13 @@ int main(){
         std::cin >> column;
         std::cin >> line;
         std::cin >> value;
+        if((column > plateColumn && column > plateLine) || 
+            (line > plateLine && line > plateColumn)){
+            continue;
+        }
         areas[i] = column*line;
         values[i] = value;
     }
-    
     maxValue = maximizeValue(areas, values, plateArea, numTypes);
     std::cout << maxValue << std::endl;
     return 0;
