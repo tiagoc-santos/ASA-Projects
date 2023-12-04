@@ -28,22 +28,19 @@ int main(){
     int plateColumn = 0, plateLine = 0, numTypes = 0,
     value = 0, line = 0, column = 0;
     
-    std::cin >> plateColumn;
-    std::cin >> plateLine;
-    std::cin >> numTypes;
+    if(scanf("%d %d", &plateColumn, &plateLine));
+    if(scanf("%d", &numTypes));
     std::vector<std::vector<int>>calculatedValues(plateColumn + 1, std::vector<int>(plateLine + 1, 0));
 
     for(int i = 0; i < numTypes; i++){
-        std::cin >> column;
-        std::cin >> line;
-        std::cin >> value;
-        if(column <= plateColumn && line <= plateLine){
+        int lol = scanf("%d %d %d", &column, &line, &value);
+        if(column <= plateColumn && line <= plateLine && lol){
             calculatedValues[column][line] = value;
         }
         if(column <= plateLine && line <= plateColumn){
             calculatedValues[line][column] = value;
         }
     }
-    std::cout << maximizeValue(plateColumn, plateLine, numTypes, calculatedValues) << std::endl;
+    printf("%d\n", maximizeValue(plateColumn, plateLine, numTypes, calculatedValues));
     return 0;
 }
