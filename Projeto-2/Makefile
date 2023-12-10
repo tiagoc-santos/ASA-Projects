@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -g -std=c++11 -O3 -Wall -lm
+CXXFLAGS = -g -std=c++11 -O3 -Wall -lm -fsanitize=address
 TARGET = proj.out
 SRC = Projeto2.cpp
 
@@ -9,4 +9,8 @@ $(TARGET): $(SRC)
 	$(CXX) $(CXXFLAGS) -o $(TARGET) $(SRC)
 
 clean:
-	rm -f $(TARGET) *.out *.in
+	rm -f $(TARGET) *.out
+
+format:
+	@which clang-format >/dev/null 2>&1 || echo "Please install clang-format to run this command"
+	clang-format -i *.cpp 
