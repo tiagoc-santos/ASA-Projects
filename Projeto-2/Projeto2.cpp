@@ -35,16 +35,16 @@ void buildGraph() {
   }
 }
 
-int DFSVisit(int time){
+int DFSVisit(vector<vector<int>>& graph, int time){
   bool visited = false;
   int v = stack_DFS.top();
   if(colors[v] == BLACK){
     stack_DFS.pop();
   }
   time++;
-  for(int i = 0; i < (int) adj[v].size(); i++){
-    if(colors[adj[v][i]] == WHITE){
-      stack_DFS.push(adj[v][i]);
+  for(int i = 0; i < (int) graph[v].size(); i++){
+    if(colors[graph[v][i]] == WHITE){
+      stack_DFS.push(graph[v][i]);
       visited = true;
     }
   }
@@ -59,18 +59,29 @@ int DFSVisit(int time){
 }
 
 
-void DFS(int source){ 
-  int time = 0;
+void DFS(vector<vector<int>>& graph, int source){ 
+  int time = 0, i = 0;
   stack_DFS.push(source);
   while(!stack_DFS.empty()){
-    time = DFSVisit(time);
+    time = DFSVisit(graph, time);
+    i++;
   }
 }
 
 int main(){
     buildGraph();
-    DFS(first);
+    DFS(adj, first);
     for(int i = 1; i <= I; i++){
+      printf("%d: %d\n", i, times[i]);
+    }
+
+    colors.assign(I + 1, WHITE);
+    times.assign(I + 1, -1);
+    stack_DFS = stack<int>();
+    DFS(rev_adj, first);
+
+    for (int i = I; i > 0; i--) {
+      DFS(rev_adj, i);
       printf("%d: %d\n", i, times[i]);
     }
     return 0;
