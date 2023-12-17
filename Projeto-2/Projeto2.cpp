@@ -1,88 +1,142 @@
 #include <cstdio>
-#include <vector>
 #include <iostream>
 #include <stack>
+#include <vector>
 
 #define WHITE 0
 #define BLACK -1
 #define GREY 1
 using namespace std;
 
-int I,R,first;
-vector<vector<int> > adj;
-vector<vector<int> > rev_adj;
+int I, R, first, last, DFStime, anterior = -1, maximo = 0;
+vector<vector<int>> adj;
+vector<vector<int>> rev_adj;
 vector<int> colors;
 vector<int> times;
+vector<int> reach;
+vector<int> nao_calcula;
 stack<int> stack_DFS;
+stack<int> stack_inversa;
 
 void buildGraph() {
   int oi = scanf("%d %d", &I, &R);
-  if(oi){}
-  adj = vector<vector<int> >(I + 1, vector<int>());
-  rev_adj = vector<vector<int> > (I + 1, vector<int>());
-  times = vector<int> (I + 1, 0);
-  colors.resize(I+1);
-  for (int i = 0; i < R; i++) { 
+  if (oi) {
+  }
+  adj = vector<vector<int>>(I + 1, vector<int>());
+  rev_adj = vector<vector<int>>(I + 1, vector<int>());
+  times = vector<int>(I + 1, -1);
+  colors.resize(I + 1);
+  reach = vector<int>(I+1, -1);
+  nao_calcula = vector<int>(I+1, -1);
+  for (int i = 0; i < R; i++) {
     int u, v;
     int lol = scanf("%d %d", &u, &v);
-    if(lol && !first){
+    if (lol && !first) {
       first = u;
     }
     adj[u].push_back(v);
     rev_adj[v].push_back(u);
-    colors[u] = WHITE;
-    colors[v] = WHITE;
   }
 }
 
-int DFSVisit(vector<vector<int>>& graph, int time){
-  bool visited = false;
-  int v = stack_DFS.top();
-  if(colors[v] == BLACK){
-    stack_DFS.pop();
-  }
-  time++;
-  for(int i = 0; i < (int) graph[v].size(); i++){
-    if(colors[graph[v][i]] == WHITE){
-      stack_DFS.push(graph[v][i]);
-      visited = true;
+void DFSVisit(vector<vector<int>> &graph, stack<int> &stack, int source) {
+  stack.push(source);
+  while (!stack.empty()) {
+    bool visited = false;
+    int v = stack.top();
+    if (colors[v] == BLACK) {
+      stack.pop();
+      continue;
     }
-  }
-  if(!visited && colors[v] == GREY){
-    colors[v] = BLACK;
-    stack_DFS.pop();
-    times[v] = time;
-    return time;
-  }
-  colors[v] = GREY;
-  return time;
-}
-
-
-void DFS(vector<vector<int>>& graph, int source){ 
-  int time = 0, i = 0;
-  stack_DFS.push(source);
-  while(!stack_DFS.empty()){
-    time = DFSVisit(graph, time);
-    i++;
+    DFStime++;
+    for (int i = 0; i < (int)graph[v].size(); i++) {
+      if (colors[graph[v][i]] == WHITE) {
+        stack.push(graph[v][i]);
+        visited = true;
+      }
+    }
+    if (!visited && colors[v] == GREY) {
+      colors[v] = BLACK;
+      stack.pop();
+      times[v] = DFStime;
+      stack_inversa.push(v);
+      continue;
+    }
+    colors[v] = GREY;
   }
 }
 
-int main(){
-    buildGraph();
-    DFS(adj, first);
-    for(int i = 1; i <= I; i++){
-      printf("%d: %d\n", i, times[i]);
+void DFSVisitReverse(vector<vector<int>> &graph, stack<int> &stack, int source) {
+  stack.push(source);
+  while (!stack.empty()) {
+    bool visited = false, vizinhos = false;
+    int v = stack.top();
+    if (colors[v] == BLACK) {
+      stack.pop();
+      continue;
     }
-
-    colors.assign(I + 1, WHITE);
-    times.assign(I + 1, -1);
-    stack_DFS = stack<int>();
-    DFS(rev_adj, first);
-
-    for (int i = I; i > 0; i--) {
-      DFS(rev_adj, i);
-      printf("%d: %d\n", i, times[i]);
+    DFStime++;
+    for (int i = 0; i < (int)rev_adj[v].size(); i++) {
+      vizinhos = true;
+      if (colors[rev_adj[v][i]] == WHITE) {
+        stack.push(rev_adj[v][i]);
+        visited = true;
+        if(nao_calcula[rev_adj[v][i]] == 1){
+          continue;
+        }
+        else{
+          reach[rev_adj[v][i]] = reach[v];
+          nao_calcula[rev_adj[v][i]] = 1;
+          continue;
+        }
+      }
+      if(reach[rev_adj[v][i]] != -1 && nao_calcula[rev_adj[v][i]] != 1){
+        reach[v] = max(reach[rev_adj[v][i]] + 1, reach[v]);
+      }
     }
-    return 0;
+    if(!vizinhos){
+      reach[v] = 0;
+    }
+    maximo = max(maximo, reach[v]);
+    if (!visited && colors[v] == GREY) {
+      colors[v] = BLACK;
+      stack.pop();
+      times[v] = DFStime;
+      continue;
+    }
+    colors[v] = GREY;
+  }
+}
+
+void DFS(vector<vector<int>> &graph, stack<int> stack, int source) {
+  for (int i = 0; i < (int)colors.size(); i++) {
+    colors[i] = WHITE;
+  }
+  for (int i = 1; i <= I; i++) {
+    if (colors[i] == WHITE)
+      DFSVisit(graph, stack, i);
+  }
+}
+
+void DFSReverse(vector<vector<int>> &graph, stack<int> stack, int source) {
+  for (int i = 0; i < (int)colors.size(); i++) {
+    colors[i] = WHITE;
+  }
+  for (int i = 0; i <= (int)stack.size(); i++) {
+    int v = stack.top();
+    stack.pop();
+    if (colors[i] == WHITE)
+      DFSVisitReverse(rev_adj, stack, v);
+  }
+}
+
+int main() {
+  buildGraph();
+  DFS(adj, stack_DFS, first);
+  last = stack_inversa.top();
+  DFStime = 0;
+  stack<int> stack2 = stack_inversa;
+  DFSReverse(rev_adj, stack2, last);
+  printf("%d\n", maximo);
+  return 0;
 }

@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -g -std=c++11 -O3 -Wall -lm -fsanitize=address
+CXXFLAGS = -g -std=c++11 -O3 -Wall -lm
 TARGET = proj.out
 SRC = Projeto2.cpp
 
