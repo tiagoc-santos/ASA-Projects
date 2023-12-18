@@ -26,8 +26,8 @@ void buildGraph() {
   rev_adj = vector<vector<int>>(I + 1, vector<int>());
   times = vector<int>(I + 1, -1);
   colors.resize(I + 1);
-  reach = vector<int>(I+1, -1);
-  nao_calcula = vector<int>(I+1, -1);
+  reach = vector<int>(I + 1, -1);
+  nao_calcula = vector<int>(I + 1, -1);
   for (int i = 0; i < R; i++) {
     int u, v;
     int lol = scanf("%d %d", &u, &v);
@@ -66,7 +66,8 @@ void DFSVisit(vector<vector<int>> &graph, stack<int> &stack, int source) {
   }
 }
 
-void DFSVisitReverse(vector<vector<int>> &graph, stack<int> &stack, int source) {
+void DFSVisitReverse(vector<vector<int>> &graph, stack<int> &stack,
+                     int source) {
   stack.push(source);
   while (!stack.empty()) {
     bool visited = false, vizinhos = false;
@@ -75,33 +76,30 @@ void DFSVisitReverse(vector<vector<int>> &graph, stack<int> &stack, int source) 
       stack.pop();
       continue;
     }
-    DFStime++;
     for (int i = 0; i < (int)rev_adj[v].size(); i++) {
       vizinhos = true;
       if (colors[rev_adj[v][i]] == WHITE) {
         stack.push(rev_adj[v][i]);
         visited = true;
-        if(nao_calcula[rev_adj[v][i]] == 1){
+        if (nao_calcula[rev_adj[v][i]] == 1) {
           continue;
-        }
-        else{
+        } else {
           reach[rev_adj[v][i]] = reach[v];
           nao_calcula[rev_adj[v][i]] = 1;
           continue;
         }
       }
-      if(reach[rev_adj[v][i]] != -1 && nao_calcula[rev_adj[v][i]] != 1){
+      if (reach[rev_adj[v][i]] != -1 && nao_calcula[rev_adj[v][i]] != 1) {
         reach[v] = max(reach[rev_adj[v][i]] + 1, reach[v]);
       }
     }
-    if(!vizinhos){
+    if (!vizinhos) {
       reach[v] = 0;
     }
     maximo = max(maximo, reach[v]);
     if (!visited && colors[v] == GREY) {
       colors[v] = BLACK;
       stack.pop();
-      times[v] = DFStime;
       continue;
     }
     colors[v] = GREY;
@@ -122,11 +120,12 @@ void DFSReverse(vector<vector<int>> &graph, stack<int> stack, int source) {
   for (int i = 0; i < (int)colors.size(); i++) {
     colors[i] = WHITE;
   }
-  for (int i = 0; i <= (int)stack.size(); i++) {
-    int v = stack.top();
-    stack.pop();
-    if (colors[i] == WHITE)
+  while (!stack_inversa.empty()) {
+    int v = stack_inversa.top();
+    if (colors[v] == WHITE) {
       DFSVisitReverse(rev_adj, stack, v);
+    }
+    stack_inversa.pop();
   }
 }
 
@@ -135,7 +134,7 @@ int main() {
   DFS(adj, stack_DFS, first);
   last = stack_inversa.top();
   DFStime = 0;
-  stack<int> stack2 = stack_inversa;
+  stack<int> stack2;
   DFSReverse(rev_adj, stack2, last);
   printf("%d\n", maximo);
   return 0;
