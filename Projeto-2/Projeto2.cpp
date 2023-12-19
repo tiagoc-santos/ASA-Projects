@@ -15,6 +15,7 @@ vector<int> colors;
 vector<int> times;
 vector<int> reach;
 vector<int> nao_calcula;
+vector<int> marked;
 stack<int> stack_DFS;
 stack<int> stack_inversa;
 
@@ -28,14 +29,17 @@ void buildGraph() {
   colors.resize(I + 1);
   reach = vector<int>(I + 1, -1);
   nao_calcula = vector<int>(I + 1, -1);
+  marked = vector<int>(I + 1, -1);
   for (int i = 0; i < R; i++) {
     int u, v;
     int lol = scanf("%d %d", &u, &v);
     if (lol && !first) {
       first = u;
     }
-    adj[u].push_back(v);
-    rev_adj[v].push_back(u);
+    if (u != v){
+      adj[u].push_back(v);
+      rev_adj[v].push_back(u);
+    }
   }
 }
 
@@ -81,19 +85,27 @@ void DFSVisitReverse(vector<vector<int>> &graph, stack<int> &stack,
       if (colors[rev_adj[v][i]] == WHITE) {
         stack.push(rev_adj[v][i]);
         visited = true;
-        if (nao_calcula[rev_adj[v][i]] == 1) {
+        if (nao_calcula[v] == 1) {
+          marked[rev_adj[v][i]] = 1;
           continue;
-        } else {
-          reach[rev_adj[v][i]] = reach[v];
+        } 
+        else if (v != rev_adj[v][i]) {
           nao_calcula[rev_adj[v][i]] = 1;
+          nao_calcula[v] = 1;
           continue;
         }
       }
-      if (reach[rev_adj[v][i]] != -1 && nao_calcula[rev_adj[v][i]] != 1) {
+      if (nao_calcula[rev_adj[v][i]] == 1 && marked[v] == 1 && nao_calcula[v] == -1){
+        nao_calcula[v] = 1;
+      }
+      if (reach[rev_adj[v][i]] != -1 && (nao_calcula[v] == -1 || (nao_calcula[v] == 1 && nao_calcula[rev_adj[v][i]] == -1 && colors[rev_adj[v][i]] != WHITE)) && v != rev_adj[v][i]) {
         reach[v] = max(reach[rev_adj[v][i]] + 1, reach[v]);
       }
+      else if (nao_calcula[v] == 1){
+        reach[v] = max(reach[rev_adj[v][i]], reach[v]);
+      }
     }
-    if (!vizinhos) {
+    if (!vizinhos || ((int)rev_adj[v].size() == 1 && v == rev_adj[v][0])) {
       reach[v] = 0;
     }
     maximo = max(maximo, reach[v]);
