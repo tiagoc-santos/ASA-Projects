@@ -20,8 +20,7 @@ stack<int> stack_inversa;
 
 void buildGraph() {
   int oi = scanf("%d %d", &I, &R);
-  if (oi) {
-  }
+  if (oi) {}
   adj = vector<vector<int>>(I + 1, vector<int>());
   rev_adj = vector<vector<int>>(I + 1, vector<int>());
   times = vector<int>(I + 1, -1);
