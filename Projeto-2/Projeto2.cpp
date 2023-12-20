@@ -47,7 +47,6 @@ void DFSVisit(vector<vector<int>> &graph, stack<int> &stack, int source) {
     if(colors[v] == WHITE){
       for (int i = 0; i < (int)graph[v].size(); i++) {
         stack.push(graph[v][i]);
-        
       }
       colors[v] = GREY;
     }
