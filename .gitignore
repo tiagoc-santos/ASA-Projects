@@ -3,3 +3,4 @@
 *.vscode
 *.DS_Store
 /Projeto-1/proj.out.dSYM
+*.txt
