@@ -14,6 +14,8 @@ pacotes_brinquedos = {}
 
 for i in range(1,  num_brinquedos + 1):
     lucro, capacidade = map(int, input().split(" "))
+    if(lucro == 0 or capacidade == 0):
+        continue
     i = str(i)
     brinquedos.append(i)
     lucro_brinquedos[i] = lucro
@@ -22,10 +24,14 @@ for i in range(1,  num_brinquedos + 1):
 
 for l in range(1, num_pacotes+1):
     i, j ,k, lucro_pacote = map(int, input().split(" "))
+    if(i > num_brinquedos or j > num_brinquedos or k > num_brinquedos or lucro_pacote == 0):
+        continue
     l = str(l)
     i = str(i)
     j = str(j)
     k = str(k)
+    if(lucro_pacote <= (lucro_brinquedos[i] + lucro_brinquedos[j] + lucro_brinquedos[k])):
+        continue
     pacotes.append(l)
     lucro_pacotes[l] = lucro_pacote
     pacotes_brinquedos[i].append(l)
@@ -45,15 +51,15 @@ prob += (
 )
 
 # constraints
-prob += (
-    (lpSum([vars_brinquedo[i] for i in brinquedos]) + lpSum(3*[vars_pacotes[j] for j in pacotes])) <= maximo, "Total toys constraints"
-)
-
 for i in brinquedos:
     prob += (
        (lpSum([vars_pacotes[j] for j in pacotes_brinquedos[i]]) + vars_brinquedo[i]) <= capacidade_max[i], "Toy maximum capacity" + i
     )
     
+prob += (
+    (lpSum([vars_brinquedo[i] for i in brinquedos]) + lpSum(3*[vars_pacotes[j] for j in pacotes])) <= maximo, "Total toys constraints"
+)
+
 prob.solve(GLPK(msg=0))
 
 print(int(pulp.value(prob.objective)))
