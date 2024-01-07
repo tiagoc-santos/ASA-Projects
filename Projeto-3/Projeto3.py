@@ -1,12 +1,9 @@
 from pulp import *
 
-info_inicial = input().split(" ")
-num_brinquedos = int(info_inicial[0])
-num_pacotes = int(info_inicial[1])
-maximo = int(info_inicial[2])
+num_brinquedos, num_pacotes, maximo = map(int, input().split())
 
-brinquedos = []
-pacotes = []
+brinquedos = {}
+pacotes = {}
 lucro_brinquedos = {}
 lucro_pacotes = {}
 capacidade_max = {}
@@ -17,7 +14,7 @@ for i in range(1,  num_brinquedos + 1):
     if(lucro == 0 or capacidade == 0):
         continue
     i = str(i)
-    brinquedos.append(i)
+    brinquedos[i] = 0
     lucro_brinquedos[i] = lucro
     capacidade_max[i] = capacidade
     pacotes_brinquedos[i] = []
@@ -32,7 +29,7 @@ for l in range(1, num_pacotes+1):
     k = str(k)
     if(lucro_pacote <= (lucro_brinquedos[i] + lucro_brinquedos[j] + lucro_brinquedos[k])):
         continue
-    pacotes.append(l)
+    pacotes[l] = 0
     lucro_pacotes[l] = lucro_pacote
     pacotes_brinquedos[i].append(l)
     pacotes_brinquedos[j].append(l)
@@ -46,8 +43,8 @@ vars_pacotes = LpVariable.dicts("Pacotes", pacotes, 0, None, LpInteger)
 
 # objective function
 prob += (
-    lpSum([vars_brinquedo[i] * lucro_brinquedos[i] for i in brinquedos]) 
-        + lpSum([vars_pacotes[j] * lucro_pacotes[j] for j in pacotes])
+    lpSum([vars_brinquedo[i] * lucro_brinquedos[i] for i in brinquedos.keys()]) 
+        + lpSum([vars_pacotes[j] * lucro_pacotes[j] for j in pacotes.keys()])
 )
 
 # constraints
@@ -57,9 +54,9 @@ for i in brinquedos:
     )
     
 prob += (
-    (lpSum([vars_brinquedo[i] for i in brinquedos]) + lpSum(3*[vars_pacotes[j] for j in pacotes])) <= maximo, "Total toys constraints"
+    (lpSum([vars_brinquedo[i] for i in brinquedos.keys()]) + 3 * lpSum([vars_pacotes[j] for j in pacotes.keys()])) <= maximo, "Total toys constraints"
 )
 
-prob.solve(GLPK(msg=0))
+prob.solve(PULP_CBC_CMD(msg = False, timeLimit = 0.05))
 
 print(int(pulp.value(prob.objective)))
