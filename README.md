@@ -9,4 +9,4 @@ Here you can find the projects statements, my proposed solutions and the mandato
 
 - **Project 2**: 20/20
 
-- **Project 3**: ?/20
+- **Project 3**: 19.5/20
