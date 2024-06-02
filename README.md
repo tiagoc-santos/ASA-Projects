@@ -1,7 +1,7 @@
 # ASA Projects
 Analysis and Synthesis of Algorithms 2023/2024 Projects. 
 
-Here you can find the projects statements, my proposed solutions and the mandatory reports (written in portuguese).
+Here you can find the project's statements, our proposed solutions and the mandatory reports (written in portuguese).
 
 ## Grades:
 
